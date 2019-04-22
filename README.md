@@ -1,4 +1,4 @@
-# tlsa-check
+# tlsa
 A quick shell wrapper to check if the domain's DANE/TLSA hash entry is correct.
 
 Default port is 443.
