@@ -53,4 +53,7 @@ if [ "$server_cert_fingerprint" = "$dns_record_hash" ]; then
 	echo "DANE/TLSA record matches server certificate"
 else
 	echo "error : DANE/TLSA record does NOT match server certificate"
+	echo "Certifcate : $server_cert_fingerprint"
+	echo "DNS Record : $dns_record_hash"
+	echo "\n> You may want to change your TLSA DNS entry to 3 0 1 $server_cert_fingerprint"
 fi
