@@ -1,0 +1,14 @@
+matrix:
+  include:
+    - name: "Bash on Xenial Linux"
+      dist: xenial
+    - name: "Bash on on macOS"
+      os: osx
+      osx_image: xcode10.2
+      language: shell
+
+before_install:
+  - shellcheck tlsa.sh
+
+script:
+  - ./tlsa.sh bytema.re
