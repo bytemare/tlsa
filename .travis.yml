@@ -6,6 +6,10 @@ matrix:
       os: osx
       osx_image: xcode10.2
       language: shell
+      before_install:
+        - brew install cask
+        - brew cask install haskell-platform
+        - cabal install cabal-install
 
 before_install:
   - shellcheck tlsa.sh
