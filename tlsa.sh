@@ -1,4 +1,6 @@
-#! /bin/bash
+#!/usr/bin/env bash
+
+set -e
 
 # Note that Shell substitution seems not to work with /bin/sh
 
@@ -21,7 +23,7 @@ fi
 
 # Get server certificate fingerprint
 
-server_cert_fingerprint=$(echo | openssl s_client -connect $domain:$port 2>/dev/null | openssl x509 -noout -fingerprint -sha256 -inform pem)
+server_cert_fingerprint=$(echo | openssl s_client -connect "$domain":"$port" 2>/dev/null | openssl x509 -noout -fingerprint -sha256 -inform pem)
 server_cert_fingerprint=${server_cert_fingerprint//:/}
 server_cert_fingerprint=${server_cert_fingerprint#*=}
 
@@ -38,7 +40,7 @@ fi
 # dns_record_hash=$(dig +dnssec +noall +answer +multi _$port._tcp.$domain. TLSA | tr -d [:space:] | cut -d "(" -f2 | cut -d ")" -f1)
 
 # Using Shell substituion is faster
-dns_record=$(dig +dnssec +noall +answer +multi _$port._tcp.$domain. TLSA | tr -d [:space:])
+dns_record=$(dig +dnssec +noall +answer +multi _"$port"._tcp."$domain". TLSA | tr -d '[:space:]')
 dns_record_hash=${dns_record#*\(}
 dns_record_hash=${dns_record_hash::-1}
 
@@ -55,5 +57,5 @@ else
 	echo "error : DANE/TLSA record does NOT match server certificate"
 	echo "Certifcate : $server_cert_fingerprint"
 	echo "DNS Record : $dns_record_hash"
-	echo "\n> If you are sure about your certificate, you may want to change your TLSA DNS entry to 3 0 1 $server_cert_fingerprint"
+	printf "\n> If you are sure about your certificate, you may want to change your TLSA DNS entry to 3 0 1 %s" "$server_cert_fingerprint"
 fi
