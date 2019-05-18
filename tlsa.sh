@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 set -e
 
@@ -18,13 +18,13 @@ fi
 # Using tr and cut is faster
 # server_cert=$(echo | openssl s_client -connect bytema.re:443 2>/dev/null | openssl x509 -noout -fingerprint -sha256 -inform pem | tr -d [:] | cut -d "=" -f2)
 #
-# Using Shell Substitution is blazing fast
+# Using Shell Substitution is blazing fast : but doesn't work with some shells :,(
+# server_cert_fingerprint=${server_cert_fingerprint//:/}
+# server_cert_fingerprint=${server_cert_fingerprint#*=}
 
 
 # Get server certificate fingerprint
-
-server_cert_fingerprint=$(echo | openssl s_client -connect "$domain":"$port" 2>/dev/null | openssl x509 -noout -fingerprint -sha256 -inform pem)
-server_cert_fingerprint=${server_cert_fingerprint//:/}
+server_cert_fingerprint=$(echo | openssl s_client -connect "$domain":"$port" 2>/dev/null | openssl x509 -noout -fingerprint -sha256 -inform pem | tr -d '[:]')
 server_cert_fingerprint=${server_cert_fingerprint#*=}
 
 #echo "$server_cert_fingerprint"
@@ -37,12 +37,15 @@ fi
 
 
 # Get DNS TLSA record hash
-# dns_record_hash=$(dig +dnssec +noall +answer +multi _$port._tcp.$domain. TLSA | tr -d [:space:] | cut -d "(" -f2 | cut -d ")" -f1)
+# dns_record_hash=$(dig +dnssec +noall +answer +multi _443._tcp.bytema.re. TLSA | tr -d [:space:] | cut -d "(" -f2 | cut -d ")" -f1)
+#
+# Using substitution is faster : but doesn't work with some shells :,(
+# dns_record_hash=${dns_record#*\(}
+# dns_record_hash=${dns_record_hash::-1}
 
 # Using Shell substituion is faster
 dns_record=$(dig +dnssec +noall +answer +multi _"$port"._tcp."$domain". TLSA | tr -d '[:space:]')
-dns_record_hash=${dns_record#*\(}
-dns_record_hash=${dns_record_hash::-1}
+dns_record_hash=$(echo "${dns_record#*\(}" | cut -d ")" -f1)
 
 #echo "$dns_record_hash"
 
@@ -58,4 +61,5 @@ else
 	echo "Certifcate : $server_cert_fingerprint"
 	echo "DNS Record : $dns_record_hash"
 	printf "\n> If you are sure about your certificate, you may want to change your TLSA DNS entry to 3 0 1 %s" "$server_cert_fingerprint"
+	exit 1
 fi
