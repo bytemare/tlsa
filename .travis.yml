@@ -7,9 +7,8 @@ matrix:
       osx_image: xcode10.2
       language: shell
       before_install:
-        - brew install cask
-        - brew cask install haskell-platform
-        - cabal install cabal-install
+        - brew install shellcheck python
+        #- brew install bashate
 
 before_install:
   - shellcheck tlsa.sh
