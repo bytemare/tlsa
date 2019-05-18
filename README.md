@@ -1,5 +1,5 @@
 # tlsa
-A quick shell wrapper to check if the domain's DANE/TLSA hash entry is correct.
+A quick shell wrapper to check if a domain's DANE/TLSA hash entry is correct.
 
 Default port is 443.
 
