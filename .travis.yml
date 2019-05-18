@@ -7,9 +7,7 @@ matrix:
       osx_image: xcode10.2
       language: shell
       before_install:
-        - brew install shellcheck python
-        - pip install bashate
-        - bashate tlsa.sh
+        - brew install shellcheck
 
 before_install:
   - shellcheck tlsa.sh
