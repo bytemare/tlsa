@@ -8,7 +8,7 @@ matrix:
       language: shell
       before_install:
         - brew install shellcheck python
-        - brew install bashate
+        - pip install bashate
         - bashate tlsa.sh
 
 before_install:
